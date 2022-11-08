@@ -7,9 +7,9 @@
 #include "../header/helper.h"
 #include "../header/structlib.h"
 
-#define ADDITION        0
-#define SUBTRACTION     1
-#define MIXED           2
+#define ADDITION        1
+#define SUBTRACTION     2
+#define MIXED           3
 
 struct UserResult user_result;
 

@@ -13,26 +13,26 @@
 #define BAD_RESP	4
 #define MAX_TEST	15.0f
 #define MAX_PRACTICE	10
+#define PRACTICE	1
+#define TEST		2
+#define EXIT		3
 
+
+/* Instantiate arrays of responses */
+char *correct_responses[CORRECT_RESP] = {
+	"Very good!", "Excellent!", "Nice work!", 
+	"Well done!", "Great!", "Keep up the good work!"
+};
+char *bad_responses[BAD_RESP] = {
+	"No, please try again", "Wrong. Try once again.", 
+	"Don't give up!", "No. Keep trying"
+};
+
+char input_buffer[CHAR_MAX];
 
 int main(int argc, char *argv[])
 {
-	int running = 1;
-	struct UserResult user_result;
-	
-	/* Instantiate arrays of responses */
-	char *correct_responses[CORRECT_RESP] = {
-		"Very good!", "Excellent!", "Nice work!", 
-		"Well done!", "Great!", "Keep up the good work!"
-	};
-	char *bad_responses[BAD_RESP] = {
-		"No, please try again", "Wrong. Try once again.", 
-		"Don't give up!", "No. Keep trying"
-	};
-	
-
-	/* Allocate input_buffer for input */
-    	char input_buffer[CHAR_MAX];
+	struct UserResult user_result;    	
 	
 	/* Generate seed for rand() function */
 	srand(time(NULL));
@@ -42,6 +42,14 @@ int main(int argc, char *argv[])
 	setname(input_buffer);
 	printf("\nWelcome %s!\n", input_buffer);
 
+	selectprogram(&user_result);
+
+    	return 0;
+}
+
+void selectprogram(struct UserResult *user_result)
+{
+	int running = 1;
     	do
     	{
         	printf("\nYou can choose:\n\t1. Do practices\n\t2. Complete a test\n\t3. Quit the program\n");
@@ -49,107 +57,41 @@ int main(int argc, char *argv[])
 
         	switch(getnum(input_buffer))
         	{
-            		case 1:
-                		choose_practices(input_buffer, correct_responses, bad_responses);
+            		case PRACTICE:
+                		selectexec(user_result, PRACTICE);
                 		break;
-            		case 2:
-                		choose_tests(&user_result, input_buffer);
+            		case TEST:
+                		selectexec(user_result, TEST);
                 		break;
-            		case 3:
+            		case EXIT:
                 		running = 0;
                			break;
             		default:
                 		break;
         	}
     	} while (running);
-    	return 0;
 }
 
-void choose_practices(char* input_buffer, char** correct_responses, char** bad_responses)
+void selectexec(struct UserResult *user_result, int program_type)
 {
-    	printf("\nNow, you can choose to do practices on:\n\t1. Additions\n\t2. Subtractions\n\t3. Additions and subtractions\n");
+	printf("\nNow, you can choose to do %s on:\n\t1. Additions\n\t2. Subtractions\n\t3. Additions and subtractions\n",
+		program_type == PRACTICE ? "practices" : "tests");
 
-    	do 
-    	{
-        	printf("\nEnter your choice >> ");
-        	switch (getnum(input_buffer))
-        	{
-            		case 1:
-                		run_practice(input_buffer, 0, correct_responses, bad_responses);
-               			return;
-            		case 2:
-                		run_practice(input_buffer, 1, correct_responses, bad_responses);
-               			return;
-            		case 3:
-                		run_practice(input_buffer, 2, correct_responses, bad_responses);
-                		return;
-            		default:
-                		return;
-        	}
-    	} while (1);
+	printf("\nEnter your choice >> ");
+	int exec_type = getnum(input_buffer);
+	
+	while(exec_type > 3 || exec_type < 0) getnum(input_buffer);
+
+	runprogram(user_result, exec_type, program_type);
 }
 
-void choose_tests(struct UserResult *user_result, char* input_buffer)
+void runprogram(struct UserResult *user_result, int exec_type, int program_type)
 {
-	printf("\nNow, you can choose to do tests on:\n\t1. Additions\n\t2. Subtractions\n\t3. Additions and subtractions\n");
-
-	do
-	{
-		printf("\nEnter your choice >> ");
-		switch(getnum(input_buffer))
-		{
-			case 1:
-				run_test(user_result, input_buffer, 0);
-				return;
-			case 2:
-				run_test(user_result, input_buffer, 1);
-				return;
-			case 3:
-				run_test(user_result, input_buffer, 2);
-				return;
-			default:
-				return;
-		}
-	} while (1);
-}
-
-void run_practice(char* input_buffer, int type, char** correct_responses, char** bad_responses)
-{
-    	int first = 0, second = 0, c = 0, passed = 0, round_count = 0;
-    	int correct_resp;
-	int bad_resp;
-	int user_input;
-	printf("Now, you will be given 10 questions to solve: \n");
-
-    	do
-    	{
-        	passed = 0;
-        	first = getrandom(MAX_INT);
-        	second = getrandom(first);
-		correct_resp = getrandom((CORRECT_RESP-1));
-		
-		printf("\nQuestion %d:\n", round_count+1);
-		do
-		{
-			bad_resp = getrandom(BAD_RESP-1);
-			passed = check_answer(input_buffer, first, second, getoperand(type, round_count), &user_input);
-
-			if(!passed) printf("\n%s\n", bad_responses[bad_resp]);
-			
-			/* Alternate between subtraction and addition if necessary */
-			else if(type == 2 && passed) c++;
-		} while (!passed);
-
-		printf("\n\n%s\n", correct_responses[correct_resp]);
-        	printf("---------------------------------\n");
-		round_count++;
-    	} while (round_count < MAX_PRACTICE);
-}
-
-void run_test(struct UserResult *user_result, char* input_buffer, int type)
-{
-	int first = 0, second = 0, passed = 0, round_count = 0;
-	printf("\nNow, you will be given 15 questions to solve: \n");
+	const int LIMIT = program_type == PRACTICE ? MAX_PRACTICE : MAX_TEST;
+	int first = 0, second = 0, operand_count = 0, passed = 0, round_count = 0;
+	int correct_index;
+	int bad_index;
+	printf("\nNow, you will be given %d questions to solve: \n", LIMIT);
 
 	/* Value of this variable is changed in check_answer() */
 	int user_input;
@@ -162,14 +104,34 @@ void run_test(struct UserResult *user_result, char* input_buffer, int type)
 		passed = 0;
 		first = getrandom(MAX_INT);
 		second = getrandom(first);
+		correct_index = getrandom((CORRECT_RESP - 1));
 		printf("\nQuestion %d:\n", round_count+1);
-
-		passed = check_answer(input_buffer, first, second, getoperand(type, round_count), &user_input);
 		
-		printf("---------------------------------\n");
-		setstruct(user_result, round_count, first, second, passed, user_input, type);
-		round_count++;
-	} while (round_count < MAX_TEST);
+		switch (program_type)
+		{
+			/* If PRACTICE, only let user continue if they enter correct answers */
+			case PRACTICE:
+				do
+				{
+					bad_index = getrandom(BAD_RESP-1);
+					passed = check_answer(input_buffer, first, second, getoperand(exec_type, round_count), &user_input);
 
-	display_results(user_result, round_count);
+					if(!passed) printf("\n%s\n", bad_responses[bad_index]);
+					
+					/* Alternate between subtraction and addition if necessary */
+					else if(exec_type == 3) operand_count++;
+				} while (!passed);
+				break;
+			case TEST:
+				passed = check_answer(input_buffer, first, second, getoperand(exec_type, round_count), &user_input);
+		}
+		
+		if(program_type == PRACTICE) printf("\n%s", correct_responses[correct_index]);
+
+		printf("\n---------------------------------\n");
+		setstruct(user_result, round_count, first, second, passed, user_input, exec_type);
+		round_count++;
+	} while (round_count < LIMIT);
+
+	if(program_type == TEST) display_results(user_result, round_count);
 }

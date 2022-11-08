@@ -1,8 +1,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#define ADDITION	0
-#define SUBTRACTION	1
+#define ADDITION	1
+#define SUBTRACTION	2
 
 int getnum(char* buffer)
 {

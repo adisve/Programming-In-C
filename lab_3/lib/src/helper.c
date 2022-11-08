@@ -6,7 +6,7 @@
 
 int getoperand(int type, int round_count)
 {
-	return (type == 2 ? (round_count % 2 == 0) : type);
+	return (type == 3 ? (round_count % 2 == 0) : type);
 }
 
 void display_results(struct UserResult *user_result, int round_count, int max)
