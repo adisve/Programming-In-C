@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include "../header/structlib.h"
+#include <stdlib.h>
 
 #define MAX_TEST	15
 
@@ -17,4 +18,9 @@ void display_results(struct UserResult *user_result, int round_count, int max)
 	for (int i = 0; i < round_count; i++) {
 		printf("\n%d. %s\t%d\t\t%d\n", i+1, user_result->questions[i], user_result->correct_responses[i], user_result->user_answers[i]);
 	}
+}
+
+int getrandom(int max)
+{
+	return rand() % (100 + 1 - 0) + 0;
 }

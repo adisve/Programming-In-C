@@ -2,12 +2,13 @@
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
-#include "lib/header/helper.h"
-#include "lib/header/structlib.h"
-#include "lib/header/input.h"
+#include "../lib/header/helper.h"
+#include "../lib/header/structlib.h"
+#include "../lib/header/input.h"
 #include "cai.h"
 
 #define CHAR_MAX    	20
+#define MAX_INT		100
 #define CORRECT_RESP	6
 #define BAD_RESP	4
 #define MAX_TEST	15.0f
@@ -18,6 +19,7 @@ int main(int argc, char *argv[])
 {
 	int running = 1;
 	struct UserResult user_result;
+	
 	/* Instantiate arrays of responses */
 	char *correct_responses[CORRECT_RESP] = {
 		"Very good!", "Excellent!", "Nice work!", 
@@ -113,7 +115,7 @@ void choose_tests(struct UserResult *user_result, char* input_buffer)
 
 void run_practice(char* input_buffer, int type, char** correct_responses, char** bad_responses)
 {
-    	int first = 0, second = 0, c = 0, passed = 0, round_count = 0, completed_questions = 0;
+    	int first = 0, second = 0, c = 0, passed = 0, round_count = 0;
     	int correct_resp;
 	int bad_resp;
 	int user_input;
@@ -122,26 +124,26 @@ void run_practice(char* input_buffer, int type, char** correct_responses, char**
     	do
     	{
         	passed = 0;
-        	first = rand() % (100 + 1 - 0) + 0;
-        	second = rand() % (first + 1 - 0) + 0;
-		correct_resp = rand() % ((CORRECT_RESP-1) + 1 - 0) + 0;
+        	first = getrandom(MAX_INT);
+        	second = getrandom(first);
+		correct_resp = getrandom((CORRECT_RESP-1));
 		
 		printf("\nQuestion %d:\n", round_count+1);
 		do
 		{
-			bad_resp = rand() % (BAD_RESP + 1 - 0) + 0;
+			bad_resp = getrandom(BAD_RESP-1);
 			passed = check_answer(input_buffer, first, second, getoperand(type, round_count), &user_input);
 
+			if(!passed) printf("\n%s\n", bad_responses[bad_resp]);
+			
 			/* Alternate between subtraction and addition if necessary */
-			if(!passed) printf("\n%s\n", bad_responses[bad_resp]); 
 			else if(type == 2 && passed) c++;
 		} while (!passed);
 
 		printf("\n\n%s\n", correct_responses[correct_resp]);
         	printf("---------------------------------\n");
-		completed_questions++;
 		round_count++;
-    	} while (completed_questions < MAX_PRACTICE);
+    	} while (round_count < MAX_PRACTICE);
 }
 
 void run_test(struct UserResult *user_result, char* input_buffer, int type)
@@ -154,11 +156,12 @@ void run_test(struct UserResult *user_result, char* input_buffer, int type)
 
 	/* Reset user result struct values */
 	user_result->passed = 0;
+
 	do
 	{
 		passed = 0;
-		first = rand() % (100 + 1) + 0;
-		second = rand() % (first + 1) + 0;
+		first = getrandom(MAX_INT);
+		second = getrandom(first);
 		printf("\nQuestion %d:\n", round_count+1);
 
 		passed = check_answer(input_buffer, first, second, getoperand(type, round_count), &user_input);
