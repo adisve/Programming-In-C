@@ -3,5 +3,6 @@
 
 int getnum();
 void setname(char* user_name);
+int check_answer(char* buffer, int a, int b);
 
 #endif

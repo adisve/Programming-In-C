@@ -15,3 +15,19 @@ void setname(char* buffer)
     fgets(buffer, sizeof(buffer), stdin);
     buffer[strcspn(buffer, "\n")] = 0;
 }
+
+int check_answer(char* buffer, int a, int b)
+{
+    int user_input;
+    printf("\nHow much is %d + %d? Answer >> ", a, b);
+    user_input = getnum(buffer);
+    if(user_input != a+b)
+    {
+        printf("\nNo. Please try again.\n");
+        return 0;
+    } 
+    else
+    {
+        return 1;
+    }
+}
