@@ -3,7 +3,7 @@ BIN=bin/
 OBJ=obj/
 
 test: $(OBJ)cai.o $(OBJ)input.o
-	gcc -Wall -Werror -o $(BIN)cai $(OBJ)cai.o $(OBJ)input.o
+	gcc -Wall -Werror -o $(BIN)cai $(OBJ)cai.o $(OBJ)input.o $(OBJ)structlib.o $(OBJ)helper.o
 
 %.o: %.c
 	gcc -c -Wall -Werror -o $@ $<
@@ -13,4 +13,6 @@ clean:
 
 build:
 	gcc -Wall -Werror -c -o $(OBJ)cai.o $(SRC)cai.c
-	gcc -Wall -Werror -c -o $(OBJ)input.o $(SRC)input.c
+	gcc -Wall -Werror -c -o $(OBJ)input.o $(SRC)lib/src/input.c
+	gcc -Wall -Werror -c -o $(OBJ)structlib.o $(SRC)lib/src/structlib.c
+	cc -Wall -Werror -c -o $(OBJ)helper.o $(SRC)lib/src/helper.c
