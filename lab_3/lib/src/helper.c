@@ -22,5 +22,5 @@ void display_results(struct UserResult *user_result, int round_count, int max)
 
 int getrandom(int max)
 {
-	return rand() % (100 + 1 - 0) + 0;
+	return rand() % (max + 1 - 0) + 0;
 }
