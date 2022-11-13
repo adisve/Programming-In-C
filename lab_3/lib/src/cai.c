@@ -2,21 +2,19 @@
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
-#include "../lib/header/helper.h"
-#include "../lib/header/structlib.h"
-#include "../lib/header/input.h"
-#include "cai.h"
+#include "../header/helper.h"
+#include "../header/structlib.h"
+#include "../header/input.h"
+#include "../header/cai.h"
 
-#define CHAR_MAX    	20
 #define MAX_INT		100
-#define CORRECT_RESP	6
-#define BAD_RESP	4
 #define MAX_TEST	15.0f
 #define MAX_PRACTICE	10
 #define PRACTICE	1
 #define TEST		2
 #define EXIT		3
-
+#define BAD_RESP	4
+#define CORRECT_RESP	6
 
 /* Instantiate arrays of responses */
 char *correct_responses[CORRECT_RESP] = {
@@ -28,26 +26,7 @@ char *bad_responses[BAD_RESP] = {
 	"Don't give up!", "No. Keep trying"
 };
 
-char input_buffer[CHAR_MAX];
-
-int main(int argc, char *argv[])
-{
-	struct UserResult user_result;    	
-	
-	/* Generate seed for rand() function */
-	srand(time(NULL));
-
-	/* Get user name, with help of setname() function from custom header file, passing input_buffer by reference */
-	printf("\nEnter your name >> ");
-	setname(input_buffer);
-	printf("\nWelcome %s!\n", input_buffer);
-
-	selectprogram(&user_result);
-
-    	return 0;
-}
-
-void selectprogram(struct UserResult *user_result)
+void selectprogram(struct UserResult *user_result, char *input_buffer)
 {
 	int running = 1;
     	do
@@ -58,10 +37,10 @@ void selectprogram(struct UserResult *user_result)
         	switch(getnum(input_buffer))
         	{
             		case PRACTICE:
-                		selectexec(user_result, PRACTICE);
+                		selectexec(user_result, PRACTICE, input_buffer);
                 		break;
             		case TEST:
-                		selectexec(user_result, TEST);
+                		selectexec(user_result, TEST, input_buffer);
                 		break;
             		case EXIT:
                 		running = 0;
@@ -72,7 +51,7 @@ void selectprogram(struct UserResult *user_result)
     	} while (running);
 }
 
-void selectexec(struct UserResult *user_result, int program_type)
+void selectexec(struct UserResult *user_result, int program_type, char *input_buffer)
 {
 	printf("\nNow, you can choose to do %s on:\n\t1. Additions\n\t2. Subtractions\n\t3. Additions and subtractions\n",
 		program_type == PRACTICE ? "practices" : "tests");
@@ -82,10 +61,10 @@ void selectexec(struct UserResult *user_result, int program_type)
 	
 	while(exec_type > 3 || exec_type < 0) getnum(input_buffer);
 
-	runprogram(user_result, exec_type, program_type);
+	runprogram(user_result, exec_type, program_type, input_buffer);
 }
 
-void runprogram(struct UserResult *user_result, int exec_type, int program_type)
+void runprogram(struct UserResult *user_result, int exec_type, int program_type, char *input_buffer)
 {
 	const int LIMIT = program_type == PRACTICE ? MAX_PRACTICE : MAX_TEST;
 	int first = 0, second = 0, operand_count = 0, passed = 0, round_count = 0;
