@@ -1,8 +1,12 @@
 #ifndef SOL_HEADER
 #define SOL_HEADER
 
-long solve_one(const char *filename);
-long solve_two(const char *filename);
-char* slice(const char *part, char *buff, int start, int end);
+struct solution {
+    int part_one;
+    int part_two;
+};
+
+struct solution solve(const char *filename);
+void swap(int *x, int *y, int *z, int temp_sum);
 
 #endif

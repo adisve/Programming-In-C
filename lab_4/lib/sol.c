@@ -1,47 +1,68 @@
+#include <stddef.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
 #include <ctype.h>
 #include "sol.h"
-#include "set.h"
 
-#define BUFF 128
-#define topriority(x) ((x) >= 'a' && (x) <= 'z' ? (x)-96 : (x)-38)
+#define BUFF 4096
+#define strip(line) line[strcspn(line, "\n")] = 0
+int comp(const void * a, const void * b);
 
 /**
- * @brief: Solve first part of Day 3 in AoC
+ * @brief: Solve first part of Day 1 in AoC
  * 
  * @param filename: AoC input for my account
- * @return long: Resulting sum of priorities
+ * @return long: Total elf calories
  */
-long solve_one(const char *filename)
+struct solution solve(const char *filename)
 {
     FILE *file = fopen(filename, "r");
-    char *line = NULL;
-    long sum = 0;
-    size_t len = 0;
-    ssize_t read;
-
     if (file == NULL)
         exit(EXIT_FAILURE);
 
-    while ((read = getline(&line, &len, file)) != -1)
-    {
-        char buff_first[strlen(line)/2];
-        char buff_sec[strlen(line)/2];
-        char in_buff[BUFF];
-        sum += topriority(intersection(slice(line, buff_first, 0, strlen(line)/2), slice(line, buff_sec, strlen(line)/2, strlen(line)), in_buff)[0]);
+    struct solution sol;
+    char line[256];
+    int calories[3] = {0, 0, 0};
+    int temp_sum = 0;
+
+    while (fgets(line, sizeof(line), file)) {
+        if (*line == '\n') {
+            swap(&calories[0], &calories[1], &calories[2], temp_sum);
+            temp_sum = 0;
+        }
+        else {
+            strip(line);
+            temp_sum += atoi(line);
+        }
     }
     
+    sol.part_one = calories[0];
+    sol.part_two = calories[0] + calories[1] + calories[2];
+
     fclose(file);
-    free(line);
-    return sum;
+
+    return sol;
 }
 
-char* slice(const char *part, char *buff, int start, int end)
+void swap(int *x, int *y, int *z, int temp_sum)
 {
-    int j = 0;
-    for (int i = start; i <= end; i++, j++)
-        buff[j] = part[i];
-    return buff;
+    if (temp_sum > *x) {
+        int temp = *x;
+        *z = *y;
+        *y = temp;
+        *x = temp_sum;
+    }
+    else if (temp_sum > *y) {
+        *z = *y;
+        *y = temp_sum;
+    }
+    else if (temp_sum > *z) {
+        *z = temp_sum;
+    }
+}
+
+int comp(const void *a, const void *b)
+{
+    return *(int*)a - *(int*)b;
 }
