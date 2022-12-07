@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "../lib/io.h"
+#include "../lib/sol.h"
 
 /**
  * @brief --- Day 3: Rucksack Reorganization ---
@@ -47,7 +47,7 @@
 
 int main(void)
 {
-    parsefile("src/input.txt");
-    
+    printf("\nPart one: Sum of priorities: %ld\n", solve_one("src/input.txt"));
+    //printf("\nPart two: %ld", solve_two("src/input.txt"));
     return 0;
 }
