@@ -71,15 +71,16 @@
  * 
  * Your puzzle answer was [207410]
  *
- * @return int 
+ * @return int: 0
+ * 
  */
 
 int main(void)
 {
-    struct solution sol = solve("src/input.txt");
-    assert(sol.part_one == 72602);
-    assert(sol.part_two == 207410);
-    printf("\nPart one [PASSED]: %d\nPart two [PASSED]: %d\n", sol.part_one, sol.part_two);
+    int sol[2] = {0, 0}; solve("src/input.txt", sol);
+    assert(sol[0] == 72602);
+    assert(sol[1] == 207410);
+    printf("\nPart one [PASSED]: %d\nPart two [PASSED]: %d\n", sol[0], sol[1]);
 
     return 0;
 }

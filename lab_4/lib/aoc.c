@@ -21,34 +21,26 @@
  * from the string with the function swap() defined as a macro, avoiding undefined behaviour.
  * 
  * @param filename: AoC input for my account
- * @return struct solution
+ * @return int *sol
  */
-struct solution solve(const char *filename)
+int* solve(const char *filename, int sol[2])
 {
     FILE *file = fopen(filename, "r");
-    if (file == NULL)
-        exit(EXIT_FAILURE);
+    if (file == NULL) exit(EXIT_FAILURE);
 
-    struct solution sol;
+    int sum = 0;
     char line[AOC_LINE_LEN];
     int calories[MAX] = {0, 0, 0};
-    int sum = 0;
 
-    while (fgets(line, sizeof(line), file))
-    {
-        if (*line == '\n')
-        {
+    while (fgets(line, sizeof(line), file)) {
+        if (*line == '\n') {
             hotswap(&calories[0], &calories[1], &calories[2], sum);
             sum = 0;
-        }
-        else
-            strip(line); sum += atoi(line);
-    }
-    
-    sol.part_one = calories[0];
-    sol.part_two = calories[0] + calories[1] + calories[2];
+        } else strip(line); sum += atoi(line);
+    } fclose(file);
 
-    fclose(file);
+    sol[0] = calories[0];
+    sol[1] = calories[0] + calories[1] + calories[2];
     return sol;
 }
 
